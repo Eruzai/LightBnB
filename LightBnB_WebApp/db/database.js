@@ -1,14 +1,6 @@
 const properties = require("./json/properties.json");
 const users = require("./json/users.json");
-
-const { Pool } = require('pg');
-
-const pool = new Pool({
-  user: 'vagrant',
-  password: '123',
-  host: 'localhost',
-  database: 'lightbnb'
-});
+const db = require("./index.js");
 
 /// Users
 
@@ -18,7 +10,7 @@ const pool = new Pool({
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithEmail = (email) => {
-  return pool
+  return db
     .query(`SELECT * FROM users WHERE email = $1`, [email])
     .then((result) => {
       if (result.rows.length > 0) {
@@ -38,7 +30,7 @@ const getUserWithEmail = (email) => {
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithId = (id) => {
-  return pool
+  return db
     .query(`SELECT * FROM users WHERE id = $1`, [id])
     .then((result) => {
       if (result.rows.length > 0) {
@@ -58,7 +50,7 @@ const getUserWithId = (id) => {
  * @return {Promise<{}>} A promise to the user.
  */
 const addUser = (user) => {
-  return pool
+  return db
     .query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *;`, [user.name, user.email, user.password])
     .then((result) => {
       return result.rows[0];
@@ -76,7 +68,7 @@ const addUser = (user) => {
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = (guest_id, limit = 10) => {
-  return pool
+  return db
     .query(`SELECT reservations.*, properties.*
     FROM reservations
       JOIN properties ON reservations.property_id = properties.id
@@ -156,7 +148,7 @@ const getAllProperties = (options, limit = 10) => {
   LIMIT $${queryParams.length};
   `;
   
-  return pool
+  return db
     .query(queryString, queryParams)
     .then((result) => {
       return result.rows;
@@ -172,7 +164,7 @@ const getAllProperties = (options, limit = 10) => {
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function (property) {
-  return pool
+  return db
     .query(`
     INSERT INTO properties (owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, parking_spaces, number_of_bathrooms, number_of_bedrooms, country, street, city, province, post_code)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *;`, [property.owner_id, property.title, property.description, property.thumbnail_photo_url, property.cover_photo_url, property.cost_per_night, property.parking_spaces, property.number_of_bathrooms, property.number_of_bedrooms, property.country, property.street, property.city, property.province, property.post_code])
