@@ -1,5 +1,3 @@
-const properties = require("./json/properties.json");
-const users = require("./json/users.json");
 const db = require("./index.js");
 
 /// Users
@@ -57,7 +55,7 @@ const addUser = (user) => {
     })
     .catch((err) => {
       console.log(err.message);
-    })
+    });
 };
 
 /// Reservations
@@ -82,7 +80,7 @@ const getAllReservations = (guest_id, limit = 10) => {
     })
     .catch((err) => {
       console.log(err.message);
-    })
+    });
 };
 
 /// Properties
@@ -163,7 +161,7 @@ const getAllProperties = (options, limit = 10) => {
  * @param {{}} property An object containing all of the property details.
  * @return {Promise<{}>} A promise to the property.
  */
-const addProperty = function (property) {
+const addProperty = (property) => {
   return db
     .query(`
     INSERT INTO properties (owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, parking_spaces, number_of_bathrooms, number_of_bedrooms, country, street, city, province, post_code)
@@ -173,7 +171,7 @@ const addProperty = function (property) {
     })
     .catch((err) => {
       console.log(err.message);
-    })
+    });
 };
 
 module.exports = {
